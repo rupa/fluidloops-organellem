@@ -1,3 +1,4 @@
+ PNS-Drum-Kit PNS-Drum-Kit 12 2;
  bandoneon bandoneon 9 1;
  global global 6 128;
  mother3 mother3 7 100;
