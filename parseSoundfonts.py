@@ -1,56 +1,53 @@
 import os
 from sf2utils.sf2parse import Sf2File
 
-listFile = ""
-
 for file in os.listdir(os.getcwd() + "/sf2/"):
-    if os.path.splitext(file)[-1].lower() == ".txt":        
+    if os.path.splitext(file)[-1].lower() == ".txt":
         os.remove(os.getcwd() + "/sf2/" + file)
 
-def takeFirst(elem):
-    return elem[0]
-def takeSecond(elem):
-    return elem[1]
+listFile = ""
 
-for file in os.listdir(os.getcwd() + "/sf2/"):
+for file in sorted(os.listdir(os.getcwd() + "/sf2/")):
 
-        soundfontFile = ""
-        presetsList = []
-        
-        with open(os.getcwd() + "/sf2/" + str(file), 'rb') as sf2_file:
-                sf2 = Sf2File(sf2_file)
-        
-        sf2Name = str(os.path.splitext(file)[0])
-        if len(sf2Name) > 20:
-                sf2Name = sf2Name[0:20]
-        sf2Name = sf2Name.rstrip()
-        sf2Name = sf2Name.replace(" ", "_")
-        listFile = listFile +" "+sf2Name+" "+sf2Name+" "+str(len(sf2Name))  # sf2Name is repeated now, older versions used the embeded name of the sf2
+    with open(os.getcwd() + "/sf2/" + str(file), 'rb') as sf2_file:
+        sf2 = Sf2File(sf2_file)
 
-        instNume = 0
+    sf2Name = str(os.path.splitext(file)[0])
+    if len(sf2Name) > 20:
+        sf2Name = sf2Name[0:20]
+    sf2Name = sf2Name.rstrip().replace(' ', '_')
+    # sf2Name is repeated now, older versions used the embedded name of the sf2
+    listFile = listFile +" "+sf2Name+" "+sf2Name+" "+str(len(sf2Name))
 
-        for preset in sf2.raw.pdta["Phdr"]:
-                instNume += 1
-                
-                if str(preset[0])[2:5] != "EOP": # End of presets tags
-                        instName = str(preset[0])[2:str(preset[0]).find('\\')];
+    presetsList = []
+    for instNume, preset in enumerate(sf2.raw.pdta["Phdr"]):
+        instName = preset.name.rstrip('\x00').replace(' ', '_').rstrip()
 
-                        if len(instName) > 14:
-                                instName = instName[0:14]
-                        instName = instName.rstrip()
-                        instName = instName.replace(" ", "_")
-                        presetsList.append([int(preset[2]), int(preset[1]), instName])
+        if instName[0:3] != "EOP": # End of presets tags
+            presetsList.append([preset.bank, preset.preset, instName])
 
-        presetsList.sort()
-        for p in presetsList:
-                soundfontFile = soundfontFile + p[2] +";"+"\n" 
+            print(
+                '{}: preset={} bank={} bag={} library={} genre={} morphology={}'
+                .format(
+                    instName,
+                    preset.preset,
+                    preset.bank,
+                    preset.bag,
+                    preset.library,
+                    preset.genre,
+                    preset.morphology
+                )
+            )
 
-        listFile = listFile+" "+str(instNume-1)+";"+"\n"
-        
-        text_file = open(os.getcwd() + "/sf2/"+ str(os.path.splitext(file)[0]) + ".txt", "w")
+    soundfontFile = ""
+    for p in sorted(presetsList):
+        soundfontFile = soundfontFile + p[2] +";"+"\n"
+
+    listFile = listFile+" "+str(instNume)+";"+"\n"
+
+    with open(os.getcwd() + "/sf2/"+ str(os.path.splitext(file)[0]) + ".txt", "w") as text_file:
         text_file.write(soundfontFile)
-        text_file.close()
+    print('')
 
-text_file = open(os.getcwd() + "/sf2/"+ "list.txt", "w")
-text_file.write(listFile)
-text_file.close()
+with open(os.getcwd() + "/sf2/"+ "list.txt", "w") as text_file:
+    text_file.write(listFile)
