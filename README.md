@@ -10,5 +10,5 @@ clone of https://patchstorage.com/fluidloops/ for me to mess around with :)
 ```bash
 ssh music@organellem.local
 cd /sdcard/Patches
-git clone https://github.com/rupa/fluidloops-organellem.git
+git clone https://github.com/rupa/fluidloops-organellem.git fluidloops
 ```
