@@ -1,4 +1,7 @@
+#!/usr/bin/env python
 """
+should work with py2 or 3, requires sf2utils
+
 pip install sf2utils
 """
 import os
