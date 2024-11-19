@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-should work with py2 or 3, requires sf2utils
+needs py3, requires sf2utils
 
 pip install sf2utils
 """
@@ -32,7 +32,7 @@ for file in sorted(os.listdir(os.getcwd() + SF2DIR)):
     presetsList = []
     presets = sf2.raw.pdta["Phdr"]
     for preset in presets:
-        instName = preset.name.rstrip('\x00').replace(' ', '_').rstrip()
+        instName = preset.name.decode().rstrip('\x00').replace(' ', '_').rstrip()
 
         if instName[0:3] != "EOP":  # End of presets tags
             presetsList.append([preset.bank, preset.preset, instName])
